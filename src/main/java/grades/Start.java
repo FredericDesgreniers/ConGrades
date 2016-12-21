@@ -35,8 +35,17 @@ public class Start{
     static String phoneNumber = "15149108628";
 
     public static void main(String[] args) throws InterruptedException, FileNotFoundException {
-
-            if(args.length>0){
+        try {
+            System.out.println(
+                    get("https://rest.nexmo.com/sms/json?api_key="+"df448f61"
+                            +"&api_secret="+"1996Concordia"
+                            +"&to="+phoneNumber
+                            +"&text="+"ConGrades will send new grades on this number"
+                            +"&from="+"14318001814"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(args.length>0){
                 rate = Long.parseLong(args[0]);
                 if(args.length > 1){
                     phoneNumber = args[1];
