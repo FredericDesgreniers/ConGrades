@@ -5,36 +5,46 @@ import com.ui4j.api.browser.BrowserFactory;
 import com.ui4j.api.browser.Page;
 import com.ui4j.api.dom.Document;
 import com.ui4j.api.dom.Element;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
+import com.ui4j.api.util.JulLogger;
+import com.ui4j.api.util.LoggerFactory;
+import com.ui4j.api.util.Slf4jLogger;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebEvent;
+import javafx.scene.web.WebView;
 
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.ProtocolException;
+
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 
 /**
  * Created by frede on 2016-12-21.
  */
 public class Start{
+
+
     static long rate = 30000;
     static HashMap<Integer, String> gradeMap = new HashMap<>();
     static String phoneNumber = "15149108628";
 
     public static void main(String[] args) throws InterruptedException, FileNotFoundException {
+        System.setProperty("log4j.rootLogger", "OFF");
+        Logger.getLogger("com.ui4j.api.util.JulLogger").setLevel(Level.SEVERE);
+
+        Platform.setImplicitExit(true);
         try {
             System.out.println(
                     get("https://rest.nexmo.com/sms/json?api_key="+"df448f61"
@@ -55,10 +65,14 @@ public class Start{
             //get browser and load page
             BrowserEngine browser = BrowserFactory.getWebKit();
             Page page = browser.navigate("http://my.concordia.ca");
-            page.show(true);
+            page.show(false);
 
-            // Start a new thread so it does not interrupt the javafx thread
-            new Thread(()->{
+
+
+            Enumeration<String> loggerNames = LogManager.getLogManager().getLoggerNames();
+            while(loggerNames.hasMoreElements()){
+                Logger.getLogger(loggerNames.nextElement()).setLevel(Level.SEVERE);
+            }
                 //wait for user to login
                 while(!page.getDocument().getTitle().toString().contains("Employee-facing")){
                     try {
@@ -67,11 +81,10 @@ public class Start{
                         e.printStackTrace();
                     }
                 }
-                //Go to grade page
-                page.getWindow().setLocation("https://campus.concordia.ca/psp/pscsprd/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.SSR_SSENRL_GRADE.GBL");
+
 
                 //check grades every 30 seconds
-                while(true){
+                while(((WebView)page.getView()).isVisible()){
                     promptSemester(page);
                     try {
                         Thread.sleep(rate);
@@ -81,8 +94,7 @@ public class Start{
                 }
 
 
-            }).start();
-            System.out.println();
+
     }
 
     /**
@@ -90,6 +102,13 @@ public class Start{
      * @param page
      */
     public static void promptSemester(Page page){
+        //Go to grade page
+        page.getWindow().setLocation("https://campus.concordia.ca/psp/pscsprd/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.SSR_SSENRL_GRADE.GBL");
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Document doc = page.getDocument();
         Document gradeFrame;
         while(true) {
