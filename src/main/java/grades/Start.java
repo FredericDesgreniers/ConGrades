@@ -103,6 +103,7 @@ public class Start{
      */
     public static void promptSemester(Page page){
         //Go to grade page
+        System.out.println("Refreshing grades...");
         page.getWindow().setLocation("https://campus.concordia.ca/psp/pscsprd/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.SSR_SSENRL_GRADE.GBL");
         try {
             Thread.sleep(2000);
@@ -116,6 +117,7 @@ public class Start{
                 gradeFrame = doc.query("#ptifrmtgtframe").get().getContentDocument().get();
                 break;
             }catch(Exception e){
+                e.printStackTrace();
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e1) {
@@ -130,6 +132,7 @@ public class Start{
                 gradeFrame.query(".PSRADIOBUTTON[value=\"1\"]").get().click();
                 break;
             }catch(Exception e){
+                e.printStackTrace();
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e1) {
