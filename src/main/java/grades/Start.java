@@ -125,11 +125,11 @@ public class Start{
                 }
             }
         }
-        gradeFrame.query("#DERIVED_SSS_SCT_SSS_TERM_LINK").get().click();
+        //gradeFrame.query("#DERIVED_SSS_SCT_SSS_TERM_LINK").get().click();
 
         while(true) {
             try {
-                gradeFrame.query(".PSRADIOBUTTON[value=\"1\"]").get().click();
+                gradeFrame.query(".PSRADIOBUTTON[value=\"3\"]").get().click();
                 break;
             }catch(Exception e){
                 e.printStackTrace();
@@ -182,20 +182,7 @@ public class Start{
      */
     static void newGrade(int index, String name, String inner){
         System.out.println("Grade for "+name+" is "+inner);
-        if(!inner.contains("nbsp")){
-            try {
-
-                System.out.println(
-                        get("https://rest.nexmo.com/sms/json?api_key="+"df448f61"
-                                +"&api_secret="+"1996Concordia"
-                                +"&to="+phoneNumber
-                                +"&text="+"Grade+for+"+name+"+is+"+inner
-                                +"&from="+"14318001814"));
-                // handle response here...
-            }catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
+        
         gradeMap.put(index, inner);
     }
     private static String readAll(Reader rd) throws IOException {
